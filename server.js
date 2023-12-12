@@ -16,22 +16,14 @@ app.use('/', htmlRoute);
 app.use(express.static('public'));
 
 //GET notes 
-
-// app.use('/api', api)
-
-
-
-// app.get('api/notes', (req, res)=>
-//     res.json(req, 'body')
-// );
-
-app.post('/api/notes', (req, res)=>
-    res.sendFile(path.join(id, '/public/index.html'))
+app.get('/', (req, res) =>
+    res.sendFile(path.join(__dirname, '/public/index.html'))
 );
 
-app.delete('/api/notes/:notes', (req, res) =>
-    res.sendFile(path.join(id, '/public/index.html'))
+app.get('/notes', (req, res) =>
+    res.sendFile(path.join(__dirname, '/public/notes.html'))
 );
+
 
 app.listen(PORT, () =>
     console.log(`App listening at http:localhost:${PORT}`)
