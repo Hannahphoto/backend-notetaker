@@ -57,8 +57,9 @@ app.post('/api/notes', (req, res)=>{
 
 // DELETE route for notes
 app.delete('/api/notes/:id', (req, res)=>{
-    const noteDelete = req.params.id;
+    const noteDelete = req.params.note.id;
     fs.readFile('./db/db.json')
+    console.log('read file')
     .then((data)=> JSON.parse(data))
     .then((json) => {
        const update = json.filter((note) => note.id !==noteDelete);
