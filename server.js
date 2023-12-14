@@ -2,6 +2,9 @@ const express = require('express');
 const htmlRoute = require('./routes/index');
 const path = require('path');
 const apiRoute = require('./routes/notes');
+const db = require('./db/db.json');
+const fs = require('fs');
+
 
 const app = express();
 
@@ -11,11 +14,19 @@ const PORT = process.env.PORT || 3001;
 //Middleware for parsing JSON and urlencoded from data.
 app.use(express.json());
 app.use(express.urlencoded({ extended: true}));
-app.use('/api', apiRoute);
-app.use('/', htmlRoute);
-app.use(express.static('public'));
+// app.use('/api', apiRoute);
+// app.use('/', htmlRoute);
+app.use(express.static(path.join(__dirname, 'public')));
+
+function uniqueID(max){
+    return Math.floor(Math.random() * max) + 1;
+};
 
 //GET notes 
+app.get('/api/notes', (req, res) => {
+    res.sendFile(path.join(__dirname, '/db/db.json'))
+});
+
 app.get('/', (req, res) =>
     res.sendFile(path.join(__dirname, '/public/index.html'))
 );
@@ -23,6 +34,57 @@ app.get('/', (req, res) =>
 app.get('/notes', (req, res) =>
     res.sendFile(path.join(__dirname, '/public/notes.html'))
 );
+
+app.post('/api/notes', (req, res)=>{
+    let note = req.body;
+    note['id'] = uniqueID(1000);
+    
+    fs.readFile('./db/db.json', ( err, res) =>{
+        if(err) console.log("Error: ",err);
+
+        let data = JSON.parse(res);
+        data.push(note);
+
+        fs.writeFile('./db/db.json', JSON.stringify(data), err => {
+            if (err) throw err;
+            console.log('Data has been saved');
+        })
+
+    })
+    res.redirect('/notes');
+
+});
+
+// DELETE route for notes
+app.delete('/api/notes/:id', (req, res)=>{
+    const noteId = req.params.id;
+    fs.readFile('./db/db.json', (err, data) => {
+        if(err){
+            console.log(err);
+            res.status(500).send('Internal Server Error');
+            return;
+        }
+    let notes = JSON.parse(data);
+    const index = notes.findIndex(note => note.id === noteId);
+    if(index !== -1){
+        notes.splice(index, 1);
+
+        fs.writeFile('./db/db.json', JSON.stringify(notes), 'utf8', (err)=>{
+            if(err){
+                console.log(err);
+                res.status(500).send('Internal Server Error');
+                return;
+            }
+            console.log('Note deleted');
+            res.status(200).send('Note deleted successfuly');
+        });
+    }else{
+        res.status(404).send('Note not found');
+    }
+      
+    }
+    
+)});
 
 
 app.listen(PORT, () =>

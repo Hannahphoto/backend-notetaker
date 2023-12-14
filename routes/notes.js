@@ -43,14 +43,14 @@ router.post('/notes', (req, res) =>{
 });
 
 // DELETE route for notes
-router.delete('/notes/:id', (req, res)=>{
-    // const
-    readFromFile('.db/db.json')
-    // .then((data)=> JSON.parse(data))
-    // .then((json) =>{
-    //     const result = json.filter((note))
-    // }
-}
-)
+// router.delete('/notes/:id', (req, res)=>{
+//     // const
+//     readFromFile('.db/db.json')
+//     // .then((data)=> JSON.parse(data))
+//     // .then((json) =>{
+//     //     const result = json.filter((note))
+//     // }
+// }
+// )
 
 module.exports = router;
