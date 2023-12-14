@@ -58,33 +58,23 @@ app.post('/api/notes', (req, res)=>{
 // DELETE route for notes
 app.delete('/api/notes/:id', (req, res)=>{
     const noteId = req.params.id;
-    fs.readFile('./db/db.json', (err, data) => {
-        if(err){
-            console.log(err);
-            res.status(500).send('Internal Server Error');
-            return;
-        }
-    let notes = JSON.parse(data);
-    const index = notes.findIndex(note => note.id === noteId);
-    if(index !== -1){
-        notes.splice(index, 1);
-
-        fs.writeFile('./db/db.json', JSON.stringify(notes), 'utf8', (err)=>{
-            if(err){
-                console.log(err);
-                res.status(500).send('Internal Server Error');
-                return;
-            }
-            console.log('Note deleted');
-            res.status(200).send('Note deleted successfuly');
-        });
-    }else{
-        res.status(404).send('Note not found');
-    }
-      
-    }
+    fs.readFile('./db/db.json')
+    .then((data) => {
+       const json = JSON.parse(data);
+       const update = json.filter((note) => note !==noteId)
+       return fs.writeToFile('./db/db.json', JSON.stringify(update));
+    })
+    .then(()=>
+        console.log('Note deleted')
+    )
+    .cath((err)=>{
+        console/log(err);
+        res.status(500).json({error: 'Internal Server Error'})
+    });
     
-)});
+
+});
+
 
 
 app.listen(PORT, () =>
