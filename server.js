@@ -36,6 +36,7 @@ app.get('/notes', (req, res) =>
     res.sendFile(path.join(__dirname, '/public/notes.html'))
 );
 
+// Post notes
 app.post('/api/notes', async (req, res) => {
     let note = req.body;
     note['id'] = uniqueID(1000);
